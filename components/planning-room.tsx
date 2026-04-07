@@ -25,6 +25,15 @@ export function PlanningRoom({
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const activeIssue = useMemo(
     () =>
@@ -99,6 +108,14 @@ export function PlanningRoom({
               </p>
             </div>
             <div className="pill-row">
+              <button
+                className="app-button-ghost"
+                style={{ marginRight: 8, fontSize: "0.8rem", padding: "4px 10px" }}
+                type="button"
+                onClick={handleCopyLink}
+              >
+                {copied ? "Copied!" : "🔗 Share Link"}
+              </button>
               <span className="pill">{session.status}</span>
               <span className="pill">{session.scale}</span>
               {session.jiraProjectKey ? <span className="pill">{session.jiraProjectKey}</span> : null}

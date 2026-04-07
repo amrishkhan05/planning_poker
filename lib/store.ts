@@ -830,3 +830,33 @@ export async function syncIssueEstimate(sessionId: string, issueId: string, user
   await writeStore(store);
   return { issue, jiraConnection };
 }
+
+export async function ensureParticipant(sessionId: string, userId: string) {
+  const store = await readStore();
+  const { workspace, user } = requireMembership(store, userId);
+  const session = store.planningSessions.find(
+    (item) => item.id === sessionId && item.workspaceId === workspace.id,
+  );
+  if (!session) throw new Error("Session not found");
+
+  const existing = store.sessionParticipants.find(
+    (p) => p.sessionId === sessionId && p.userId === userId,
+  );
+  if (!existing) {
+    store.sessionParticipants.push({
+      id: randomUUID(),
+      sessionId,
+      userId,
+      role: "participant",
+    });
+    appendAuditEvent(store, {
+      workspaceId: workspace.id,
+      actorUserId: user.id,
+      action: "session.joined",
+      targetType: "planning_session",
+      targetId: sessionId,
+      detail: "User joined the session via shared link.",
+    });
+    await writeStore(store);
+  }
+}
