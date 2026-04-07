@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum SessionMode {
+  LIVE
+  ASYNC
+}
+
+enum SessionStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum VoteScale {
+  FIBONACCI
+  TSHIRT
+  CUSTOM
+}
+
+enum ParticipantRole {
+  FACILITATOR
+  PARTICIPANT
+  VIEWER
+}
+
+enum RoundStatus {
+  COLLECTING
+  REVEALED
+  FINALIZED
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
+model Workspace {
+  id          String           @id @default(cuid())
+  name        String
+  createdAt   DateTime         @default(now())
+  users       User[]
+  memberships Membership[]
+  sessions    PlanningSession[]
+  jiraConfig  JiraConnection?
+  invites     Invite[]
+  auditEvents AuditEvent[]
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime         @default(now())
+  workspaceId  String
+  workspace    Workspace        @relation(fields: [workspaceId], references: [id])
+  memberships  Membership[]
+  authSessions AuthSession[]
+}
+
+model Membership {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+}
+
+model AuthSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PlanningSession {
+  id             String               @id @default(cuid())
+  workspaceId    String
+  title          String
+  status         SessionStatus
+  mode           SessionMode
+  scale          VoteScale
+  customValues   String[]
+  facilitatorId  String
+  createdById    String
+  jiraProjectKey String?
+  activeIssueId  String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  workspace      Workspace            @relation(fields: [workspaceId], references: [id])
+  issues         PlanningIssue[]
+  participants   SessionParticipant[]
+}
+
+model SessionParticipant {
+  id         String          @id @default(cuid())
+  sessionId  String
+  userId     String
+  role       ParticipantRole
+  joinedAt   DateTime?
+  session    PlanningSession @relation(fields: [sessionId], references: [id])
+}
+
+model PlanningIssue {
+  id              String          @id @default(cuid())
+  sessionId       String
+  title           String
+  summary         String
+  order           Int
+  jiraIssueKey    String?
+  jiraIssueUrl    String?
+  issueType       String
+  priority        String
+  labels          String[]
+  importedAt      DateTime        @default(now())
+  finalEstimate   String?
+  syncStatus      SyncStatus
+  syncedAt        DateTime?
+  referenceStory  String?
+  session         PlanningSession @relation(fields: [sessionId], references: [id])
+  rounds          PlanningRound[]
+}
+
+model PlanningRound {
+  id          String         @id @default(cuid())
+  issueId     String
+  index       Int
+  status      RoundStatus
+  revealedAt  DateTime?
+  finalizedAt DateTime?
+  issue       PlanningIssue  @relation(fields: [issueId], references: [id])
+  votes       PlanningVote[]
+}
+
+model PlanningVote {
+  id        String        @id @default(cuid())
+  roundId   String
+  userId    String
+  value     String
+  createdAt DateTime      @default(now())
+  round     PlanningRound @relation(fields: [roundId], references: [id])
+}
+
+model JiraConnection {
+  id               String    @id @default(cuid())
+  workspaceId      String    @unique
+  baseUrl          String
+  projectKeys      String[]
+  storyPointsField String
+  teamField        String?
+  connectedAt      DateTime  @default(now())
+  workspace        Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Invite {
+  id          String        @id @default(cuid())
+  workspaceId String
+  email       String
+  role        WorkspaceRole
+  invitedById String
+  token       String        @unique
+  createdAt   DateTime      @default(now())
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+}
+
+model AuditEvent {
+  id          String    @id @default(cuid())
+  workspaceId String
+  actorUserId String
+  action      String
+  targetType  String
+  targetId    String?
+  detail      String?
+  createdAt   DateTime  @default(now())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}

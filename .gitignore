@@ -1,0 +1,6 @@
+.next
+node_modules
+.env
+dist
+.data/store.json
+prisma/dev.db
