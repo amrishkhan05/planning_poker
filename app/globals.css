@@ -1,5 +1,4 @@
 :root {
-  color-scheme: dark;
   --bg: #08111f;
   --bg-soft: #11203a;
   --panel: rgba(13, 26, 48, 0.9);
@@ -12,6 +11,27 @@
   --success: #56c7a5;
   --danger: #ff8e8e;
   --shadow: 0 24px 80px rgba(1, 8, 20, 0.42);
+  --glass-bg: linear-gradient(180deg, rgba(13, 26, 48, 0.94), rgba(8, 19, 35, 0.96));
+  --hero-bg: radial-gradient(circle at top right, rgba(244, 140, 43, 0.18), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(54, 116, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, #07101d 0%, #091527 45%, #0f1d34 100%);
+  --sidebar-bg: rgba(6, 14, 26, 0.92);
+}
+
+.light-theme {
+  --bg: #f8fafd;
+  --bg-soft: #ffffff;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-strong: rgba(255, 255, 255, 0.98);
+  --border: rgba(15, 23, 42, 0.08);
+  --text: #0f172a;
+  --muted: #64748b;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.05);
+  --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 253, 0.96));
+  --hero-bg: radial-gradient(circle at top right, rgba(244, 140, 43, 0.08), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(54, 116, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, #f8fafd 0%, #edf2f7 45%, #e2e8f0 100%);
+  --sidebar-bg: rgba(255, 255, 255, 0.96);
 }
 
 * {
@@ -22,10 +42,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at top right, rgba(244, 140, 43, 0.18), transparent 24%),
-    radial-gradient(circle at bottom left, rgba(54, 116, 255, 0.18), transparent 30%),
-    linear-gradient(180deg, #07101d 0%, #091527 45%, #0f1d34 100%);
+  background: var(--hero-bg);
   color: var(--text);
   font-family: "Avenir Next", "Satoshi", "Segoe UI", sans-serif;
 }
@@ -70,7 +87,7 @@ button {
 .room-surface,
 .auth-panel {
   border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(13, 26, 48, 0.94), rgba(8, 19, 35, 0.96));
+  background: var(--glass-bg);
   border-radius: 24px;
   box-shadow: var(--shadow);
 }
@@ -227,7 +244,7 @@ button {
 .workspace-sidebar {
   border-right: 1px solid var(--border);
   padding: 24px 18px;
-  background: rgba(6, 14, 26, 0.92);
+  background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   gap: 18px;

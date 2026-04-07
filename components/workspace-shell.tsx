@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { ThemeToggle } from "./theme-toggle";
 
 export function WorkspaceShell({
   workspaceName,
@@ -53,9 +54,17 @@ export function WorkspaceShell({
             </Link>
           ))}
         </nav>
-        <button className="app-button-ghost" type="button" style={{ marginTop: "auto" }} onClick={handleSignOut}>
-          Sign out
-        </button>
+        <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+          <ThemeToggle />
+          <button
+            className="app-button-ghost"
+            type="button"
+            style={{ flex: 1 }}
+            onClick={handleSignOut}
+          >
+            Sign out
+          </button>
+        </div>
       </aside>
       <main className="workspace-main">{children}</main>
     </div>

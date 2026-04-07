@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { APP_URL, FIBONACCI_SCALE, TSHIRT_SCALE } from "@/lib/constants";
 import type { PlanningIssueView, PlanningSessionView } from "@/lib/types";
+import { ThemeToggle } from "./theme-toggle";
 
 function allowedValues(session: PlanningSessionView) {
   if (session.scale === "custom") return session.customValues;
@@ -108,6 +109,7 @@ export function PlanningRoom({
               </p>
             </div>
             <div className="pill-row">
+              <ThemeToggle />
               <button
                 className="app-button-ghost"
                 style={{ marginRight: 8, fontSize: "0.8rem", padding: "4px 10px" }}
